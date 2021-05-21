@@ -1,0 +1,65 @@
+device:
+  poll: True
+  name: 'panasonicvrv'
+  connection:
+    type: request
+    params: 
+      verify: False
+      headers: { "Authorization": "Bearer __CLIMATE_IP_TOKEN__" }
+  status:
+    type: 'json_status'
+    connection:
+      params: { method: 'GET', url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_getinfo_hass.php?device=__CLIMATE_DEVICE_ID__' }
+  operations:
+    hvac: # hvac_mode
+      type: modes
+      connection:
+        params: { method: 'GET', url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }
+      values: 
+#        'cool': { value : 'Cool', connection: { params: { json: [{"CommandType": "ModeOp", "Status": "2" }] }, connection: { params: { json: [{"CommandType": "OnOff", "Status": "1" }], url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }, condition_template: "{% if device_state.Devices.0.Operation.power == 'Off' -%}1{%- else -%}0{%- endif %}" } } }
+#        'heat': { value : 'Heat', connection: { params: { json: [{"CommandType": "ModeOp", "Status": "4" }] }, connection: { params: { json: [{"CommandType": "OnOff", "Status": "1" }], url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }, condition_template: "{% if device_state.Devices.0.Operation.power == 'Off' -%}1{%- else -%}0{%- endif %}" } } }
+        'dry': { value : 'Dry', connection: { params: { json: [{"CommandType": "ModeOp", "Status": "3" }] }, connection: { params: { json: [{"CommandType": "OnOff", "Status": "1" }], url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }, condition_template: "{% if device_state.Devices.0.Operation.power == 'Off' -%}1{%- else -%}0{%- endif %}" } } }
+        'heat_cool': { value : 'Auto', connection: { params: { json: [{"CommandType": "ModeOp", "Status": "9" }] }, connection: { params: { json: [{"CommandType": "OnOff", "Status": "1" }], url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }, condition_template: "{% if device_state.Devices.0.Operation.power == 'Off' -%}1{%- else -%}0{%- endif %}" } } }
+        'fan_only': { value : 'Wind', connection: { params: { json: [{"CommandType": "ModeOp", "Status": "1" }] }, connection: { params: { json: [{"CommandType": "OnOff", "Status": "1" }], url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }, condition_template: "{% if device_state.Devices.0.Operation.power == 'Off' -%}1{%- else -%}0{%- endif %}" } } }
+        'off': { value : 'Off', connection: { params: { json: [{"CommandType": "OnOff", "Status": "0" }], url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }, condition_template: "{% if device_state.Devices.0.Operation.power == 'On' -%}1{%- else -%}0{%- endif %}" } }
+      status_template: "{% if device_state.Devices.0.Operation.power == 'Off' -%}{{ device_state.Devices.0.Operation.power }}{%- else -%}{{ device_state.Devices.0.Mode.modes.0 }}{%- endif %}"
+    power:
+      type: switch
+      connection:
+        params: { method: 'GET', url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }
+      values:
+        'off': { value: 'Off', connection: { params: { json: [{ "CommandType": "OnOff" , "Status": "0"  }] } } }
+        'on': { value: 'On', connection: { params: { json: [{ "CommandType": "OnOff" , "Status": "1"  }] } } }
+      status_template: '{{ device_state.Devices.0.Operation.power }}'
+    fan: # fan_mode
+      type: modes
+      connection:
+        params: { method: 'GET', url: 'http://__CLIMATE_IP_HOST__:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }
+      values: 
+        'auto': { value : '0', connection: { params: { json:[{ "CommandType": "WindMode" , "Status": "0"  }]  } } }
+        'low': { value : '1', connection: { params: { json: [{ "CommandType": "WindMode" , "Status": "1"  }]  } } }
+        'medium': { value : '2', connection: { params: { json: [{ "CommandType": "WindMode" , "Status": "2"  }]  } } }
+        'high': { value : '3', connection: { params: { json: [{ "CommandType": "WindMode" , "Status": "3"  }]  } } }
+      status_template: '{{ device_state.Devices.0.Wind.speedLevel }}'
+    temperature:
+      type: number
+      connection:
+        params: { method: 'GET', url: 'http://192.168.10.131:80/vrv/api_setcommand.php?device=__CLIMATE_DEVICE_ID__' }
+      min: 18
+      max: 32
+      status_template: '{{ device_state.Devices.0.Temperatures.0.desired | int }}'
+      connection_template: '{ "json": [{ "CommandType": "TempTarget" , "Status": {{value | int}}  }] }'
+      unit_template: '{{ device_state.Devices.0.Temperatures.0.unit }}'
+  attributes:
+    current_temperature:
+      type: number
+      status_template: '{{ device_state.Devices.0.Temperatures.0.current }}'
+      unit_template: '{{ device_state.Devices.0.Temperatures.0.unit }}'
+    min_temp:
+      type: number
+      status_template: '18'
+      unit_template: '{{ device_state.Devices.0.Temperatures.0.unit }}'
+    max_temp:
+      type: number
+      status_template: '30'
+      unit_template: '{{ device_state.Devices.0.Temperatures.0.unit }}'
