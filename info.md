@@ -1,4 +1,4 @@
-# Climate_IP - IP based climate device for Home Assistant
+# Climate_IP - IP based climate device for Home Assistant (Panasonic Supported!)
 Implementation of ClimateDevice for controlling IP based AC units.
 This component is able to work with any AC unit which can be controlled with REST API.
 At this moment it is configured to work with:
