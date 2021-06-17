@@ -1,4 +1,4 @@
-# Climate_IP - IP based climate device for Home Assistant
+# Climate_IP - IP based VRF climate device for Home Assistant
 Implementation of ClimateDevice for controlling IP based AC units.
 This component is able to work with any AC unit which can be controlled with REST API.
 At this moment it is configured to work with:
@@ -20,23 +20,8 @@ Support for any unit working with REST API can be easily added via YAML configur
           token: 'token'
           cert: 'ac14k_m.pem'
         ```
-    * For MIM-H03 controller (REST API, port 8888)
-        ```
-        - platform: climate_ip
-          config_file: 'mim-h03_heatpump.yaml'
-          ip_address: 'device_ip'
-          token: 'token'
-          cert: 'ac14k_m.pem'
-        ```
-    * For old generation units:
-        ```
-        - platform: climate_ip
-          config_file: 'samsung_2878.yaml'
-          ip_address: 'device_ip'
-          token: 'token'
-          cert: 'ac14k_m.pem' #set as '' to skip certificate verification
-          mac: 'AB:cd:EF:gh:IJ'
-        ```
+
+
 ## Configuration
 1. Configuration parameters:
 
@@ -73,16 +58,7 @@ Functionality depends on yaml configuration file and can be easily changed by ed
     * turn beep mode on and off
     * read current indoor temperature
     * read device configuration
-1. For old generation units 
-    * turn device on and off
-    * sets and reads target temperature
-    * sets and reads swing direction (if supported)
-    * sets and reads fan level (if supported)
-    * sets and reads special mode (Comfort, Quiet etc)
-    * turn purify mode on and off (if supported)
-    * turn auto clean mode on and off (if supported)
-    * read current indoor temperature
-    * read device configuration
+
 ## Using
 ### Default functionality
 This component implements Home Assistant ClimateDevice class. Functionality enabled in HA by default:
@@ -122,9 +98,4 @@ switch:
             entity_id: climate.salon_ac
             purify: 'off'
 ```
-# References
- * [Samsung protocol description](https://community.openhab.org/t/newgen-samsung-ac-protocol/33805)
- * [HA forum](https://community.home-assistant.io/t/samsung-ac/11747/11)
- 
-## TODO
-Documentation...
+
